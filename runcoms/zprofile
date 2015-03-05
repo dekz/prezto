@@ -17,8 +17,9 @@ fi
 # Editors
 #
 
-export EDITOR='nano'
-export VISUAL='nano'
+alias vim="nvim"
+export EDITOR='vim'
+export VISUAL='vim'
 export PAGER='less'
 
 #
@@ -44,6 +45,7 @@ typeset -gU cdpath fpath mailpath path
 # Set the list of directories that Zsh searches for programs.
 path=(
   /usr/local/{bin,sbin}
+  $HOME/bin
   $path
 )
 
@@ -72,3 +74,50 @@ if [[ ! -d "$TMPDIR" ]]; then
 fi
 
 TMPPREFIX="${TMPDIR%/}/zsh"
+
+
+# Z
+[[ -s "$HOME/environment/z" ]] && source "$HOME/environment/z/z.sh"
+# Go
+export GOPATH="$HOME/environment/go"
+export PATH="$GOPATH/bin:$PATH"
+[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
+
+#
+# Ruby
+#
+export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
+eval "$(rbenv init - zsh)"
+alias rb=rbenv
+alias be="bundle exec"
+alias zr="zeus rake"
+alias zrs="zeus rspec"
+
+# Docker
+export DOCKER_HOST=tcp://192.168.59.103:2376
+export DOCKER_CERT_PATH=/Users/jacob/.boot2docker/certs/boot2docker-vm
+export DOCKER_TLS_VERIFY=1
+
+# boot2docker
+export BOOT2DOCKER_PROFILE=~/.boot2docker/profile
+docker-enter() {
+  docker exec -i -t "$@" bash
+}
+
+function spoof-mac() { sudo spoof-mac randomize wi-fi }
+
+bindkey '^R' history-incremental-search-backward
+
+fancy-ctrl-z () {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER="fg"
+    zle accept-line
+  else
+    zle push-input
+    zle clear-screen
+  fi
+}
+zle -N fancy-ctrl-z
+bindkey '^Z' fancy-ctrl-z
+
